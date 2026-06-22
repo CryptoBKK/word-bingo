@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import ROUND_WORDS from "./words";
+import ROUND_WORDS, { GRADE_LEVELS } from "./words";
 import { shuffle, generateBoard } from "./bingo";
 import BingoBoard from "./components/BingoBoard";
 import Caller from "./components/Caller";
@@ -7,6 +7,7 @@ import PrintView from "./components/PrintView";
 import "./App.css";
 
 export default function App() {
+  const [gradeLevel, setGradeLevel] = useState("3_4");
   const [round, setRound] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
   const [wordPool, setWordPool] = useState([]);
@@ -18,7 +19,7 @@ export default function App() {
   const [showPrint, setShowPrint] = useState(false);
 
   const startRound = useCallback((roundIdx) => {
-    const data = ROUND_WORDS[roundIdx];
+    const data = ROUND_WORDS[gradeLevel][roundIdx];
     const pool = [...data.words];
     const shuffled = shuffle(pool);
     setRound(roundIdx);
@@ -30,7 +31,7 @@ export default function App() {
     setDemoBoard(generateBoard(pool));
     setGameStarted(true);
     setShowPrint(false);
-  }, []);
+  }, [gradeLevel]);
 
   function callNextWord() {
     if (callIndex >= shuffledPool.length) return;
@@ -63,7 +64,7 @@ export default function App() {
       <PrintView
         wordPool={wordPool}
         round={round + 1}
-        theme={ROUND_WORDS[round].theme}
+        theme={ROUND_WORDS[gradeLevel][round].theme}
         onClose={() => setShowPrint(false)}
       />
     );
@@ -75,10 +76,26 @@ export default function App() {
         <div className="welcome">
           <h1>Word Bingo!</h1>
           <p className="subtitle">A fun reading game for kids</p>
+
+          <div className="grade-select">
+            <h2>Choose a Grade Level</h2>
+            <div className="grade-grid">
+              {Object.entries(GRADE_LEVELS).map(([key, label]) => (
+                <button
+                  key={key}
+                  className={`btn grade-btn ${gradeLevel === key ? "active" : ""}`}
+                  onClick={() => setGradeLevel(key)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="round-select">
             <h2>Choose a Round to Start</h2>
             <div className="round-grid">
-              {ROUND_WORDS.map((data, i) => (
+              {ROUND_WORDS[gradeLevel].map((data, i) => (
                 <button
                   key={i}
                   className="btn round-btn"
@@ -96,13 +113,15 @@ export default function App() {
   }
 
   const allCalled = callIndex >= shuffledPool.length;
-  const theme = ROUND_WORDS[round].theme;
+  const theme = ROUND_WORDS[gradeLevel][round].theme;
+  const gradeLevelLabel = GRADE_LEVELS[gradeLevel];
 
   return (
     <div className="app">
       <header className="game-header no-print">
         <h1>Word Bingo!</h1>
         <div className="round-info">
+          <span className="grade-badge">{gradeLevelLabel}</span>
           <span className="round-badge">Round {round + 1} / 10</span>
           <span className="theme-badge">{theme}</span>
         </div>

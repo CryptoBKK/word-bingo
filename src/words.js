@@ -1,11 +1,11 @@
 const GRADE_LEVELS = {
   K2: "Kindergarten - 2nd",
-  3_4: "3rd - 4th",
-  5_6: "5th - 6th"
+  "3_4": "3rd - 4th",
+  "5_6": "5th - 6th"
 };
 
 const ROUND_WORDS = {
-  K2: [
+  "K2": [
     {
       theme: "Animals",
       words: [
